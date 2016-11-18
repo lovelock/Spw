@@ -1,0 +1,28 @@
+{
+    "name": "lovelock/spw",
+    "description": "Simple PDO Wrapper",
+    "authors": [
+        {
+            "name": "coderd",
+            "email": "likesimplemail@gmail.com"
+        },
+        {
+            "name": "lovelock",
+            "email": "frostwong@gmail.com",
+            "homepage": "http://lovelock.coding.me"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Spw\\": "src/",
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php" : "^5.6 || ^7.0",
+        "ext-mysqlnd": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.6"
+    }
+}
