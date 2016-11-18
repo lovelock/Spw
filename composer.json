@@ -12,6 +12,7 @@
             "homepage": "http://lovelock.coding.me"
         }
     ],
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Spw\\": "src/",
