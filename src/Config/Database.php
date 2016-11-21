@@ -20,6 +20,7 @@ class Database extends Base
         Env::DEV => [
             'testpdo' => [
                 'write' => ['192.168.159.3'],
+                'read' => ['192.168.159.3'],
                 'port' => '3306',
                 'database' => 'testpdo',
                 'username' => 'kop',
@@ -30,5 +31,4 @@ class Database extends Base
         Env::PROD => [
         ],
     ];
-
 }

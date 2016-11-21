@@ -54,7 +54,7 @@ class Env
         self::$cli = $cli;
 
         if (empty($env)) {
-            $envFile = ROOT_DIR . DIRECTORY_SEPARATOR . self::ENV_FILE;
+            $envFile = WEB_ROOT . DIRECTORY_SEPARATOR . self::ENV_FILE;
             if (!file_exists($envFile)) {
                 throw new RuntimeException('Environment file (' . self::ENV_FILE . ') must be provided');
             }
