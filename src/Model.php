@@ -10,6 +10,7 @@ namespace Spw;
 
 use InvalidArgumentException;
 use RuntimeException;
+use Spw\Config\Bag;
 use Spw\Config\Database;
 use Spw\Support\Str;
 use Spw\Utils\Timer;
@@ -68,7 +69,7 @@ class Model
     {
         $this->database = $database;
         $this->table = $table;
-        $this->manager = Manager::getInstance(Database::get());
+        $this->manager = Manager::getInstance(Bag::get());
     }
 
     final protected function table($table)
