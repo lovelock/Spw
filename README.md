@@ -14,6 +14,10 @@ Then change `vender/lovelock/Spw/src/Config/Database.php` to adapt your own data
 ## Api
 
 1. `table`
+    
+    ```
+    ...->table()
+    ```
 1. `select`
     
     ```
