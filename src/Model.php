@@ -145,7 +145,6 @@ class Model
         $builtSql = $this->buildSelectSql();
         $sql = $builtSql['sql'];
 
-        echo $sql;
         $inputParameters = $builtSql['inputParameters'];
 
         return $this->execRowSetReturned($sql, $inputParameters);
