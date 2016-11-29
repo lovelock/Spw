@@ -11,13 +11,14 @@ namespace Spw;
 
 use PDO;
 use PDOException;
+use Spw\Config\ConfigInterface;
 
-class Connection
+class Connection implements ConnectionInterface
 {
     /**
      * The config of database.
      *
-     * @var array
+     * @var ConfigInterface
      */
     protected $config;
 
@@ -28,12 +29,10 @@ class Connection
      */
     protected $pdo;
 
-    /**
-     * The active PDO connection used for reads.
-     *
-     * @var PDO
-     */
-    protected $readPdo;
+    protected $table;
+
+    protected $columns;
+
 
     /**
      * The default PDO connection timeout
@@ -51,32 +50,52 @@ class Connection
         PDO::ATTR_TIMEOUT => self::TIME_OUT,
     ];
 
-    public function __construct(array $config)
+    public function __construct(ConfigInterface $config)
     {
         $this->config = $config;
     }
 
     /**
-     * @param $config
-     * @return PDO
-     * @throws \PDOException
+     * @return mixed
      */
-    private function connect($config)
+    public function getColumns()
     {
-        try {
-            $dsn = "mysql:dbname={$config['database']};host={$config['host']};port={$config['port']};charset={$config['charset']}";
+        return $this->columns;
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
+
+    /**
+     * @return PDO
+     * @internal param $config
+     */
+    private function connect()
+    {
+        $dsn = sprintf('%s:dbname=%s;host=%s;port=%d;charset=%s', $this->config->getRMDBSName(),
+            $this->config->getDatabaseName(),
+            $this->config->getHost(),
+            $this->config->getPort(),
+            $this->config->getDefaultCharset()
+        );
+
+        try {
             $pdo = new \PDO(
                 $dsn,
-                $config['username'],
-                $config['password'],
+                $this->config->getUserName(),
+                $this->config->getPassword(),
                 $this->options
             );
 
-            $pdo->exec('set names ' . $config['charset']);
+            $pdo->exec('SET NAMES ' . $this->config->getDefaultCharset());
         } catch (PDOException $e) {
             trigger_error(
-                'Errors on connecting mysql(' . $dsn . ' username=' . $config['username'] . ')',
+                'Errors on connecting mysql(' . $dsn . ' username=' . $this->config->getUserName() . ')',
                 E_USER_WARNING
             );
             throw $e;
@@ -84,49 +103,63 @@ class Connection
         return $pdo;
     }
 
-    final public function getWritePdo()
+    public function from(string $table)
     {
-        if ($this->pdo !== null) {
-            return $this->pdo;
-        }
+        $this->table = $table;
 
-        $this->pdo = $this->getPdo('write');
-        return $this->pdo;
+        return $this;
     }
 
-    final public function getReadPdo()
+    /**
+     * @param string|array $columns
+     * @return mixed
+     * @throws \PDOException
+     */
+    public function select($columns = '*')
     {
-        if ($this->readPdo !== null) {
-            return $this->readPdo;
-        }
+        $this->columns = $columns;
 
-        $this->readPdo = $this->getPdo('read');
-        return $this->readPdo;
+        $sql = StatementBuilder::buildSelectStatement($this);
+
+        return $this->connect()->prepare($sql)->fetchAll();
     }
 
-    private function getPdo($type)
+    /**
+     * @param array $columns
+     * @return mixed
+     * @throws \PDOException
+     */
+    public function selectOne($columns = ['*'])
     {
-        $config = $this->getConfig($type);
-        if (empty($config)) {
-            return null;
-        }
-
-        return $this->connect($config) ?: null;
+        // TODO: Implement selectOne() method.
     }
 
-    private function getConfig($type = 'write')
+    /**
+     * @param array $values
+     * @return mixed
+     * @throws \PDOException
+     */
+    public function insert(array $values)
     {
-        if (!isset($this->config[$type]) || empty($this->config[$type])) {
-            return [];
-        }
-        $host = $this->config[$type][array_rand($this->config[$type], 1)];
-        return [
-            'host' => $host,
-            'port' => $this->config['port'],
-            'database' => $this->config['database'],
-            'username' => $this->config['username'],
-            'password' => $this->config['password'],
-            'charset' => $this->config['charset'],
-        ];
+        // TODO: Implement insert() method.
+    }
+
+    /**
+     * @param array $values
+     * @return mixed
+     * @throws \PDOException
+     */
+    public function update(array $values)
+    {
+        // TODO: Implement update() method.
+    }
+
+    /**
+     * @param array $bindings
+     * @return mixed
+     */
+    public function prepareBinds(array $bindings)
+    {
+        // TODO: Implement prepareBinds() method.
     }
 }
