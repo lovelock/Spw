@@ -16,7 +16,7 @@ class DevConfig implements ConfigInterface
      *
      * @return string
      */
-    public function getRMDBSName(): string
+    public function getRMDBSName()
     {
         return 'mysql';
     }
@@ -26,7 +26,7 @@ class DevConfig implements ConfigInterface
      *
      * @return string
      */
-    public function getDatabaseName(): string
+    public function getDatabaseName()
     {
         return 'spw';
     }
@@ -36,7 +36,7 @@ class DevConfig implements ConfigInterface
      *
      * @return string
      */
-    public function getDefaultCharset(): string
+    public function getDefaultCharset()
     {
         return 'utf8mb4';
     }
@@ -46,7 +46,7 @@ class DevConfig implements ConfigInterface
      *
      * @return string
      */
-    public function getUserName(): string
+    public function getUserName()
     {
         return 'spw';
     }
@@ -56,17 +56,18 @@ class DevConfig implements ConfigInterface
      *
      * @return string
      */
-    public function getPassword(): string
+    public function getPassword()
     {
         return 'spw';
     }
 
-    public function getHost(): string
+    public function getHost()
     {
-        return '127.0.0.1';
+//        return '127.0.0.1';
+        return '192.168.159.3';
     }
 
-    public function getPort(): int
+    public function getPort()
     {
         return 3306;
     }

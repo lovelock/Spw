@@ -2,23 +2,40 @@
 /**
  * Created by PhpStorm.
  * User: Frost Wong <frostwong@gmail.com>
- * Date: 11/29/16
- * Time: 11:54 PM
+ * Date: 11/30/16
+ * Time: 4:42 PM
  */
 
 namespace Spw;
 
 
+use PDO;
+use PDOException;
+
 class StatementBuilder
 {
-    public static function buildSelectStatement(ConnectionInterface $connection)
+    /**
+     * @param \PDOStatement $statement
+     * @param array $params
+     * @return \PDOStatement
+     * @throws PDOException
+     */
+    public static function bindParams(\PDOStatement $statement, array $params)
     {
-        $columns = $connection->getColumns();
-        if (is_array($columns)) {
-            $implodedColumns = implode(', ', $connection->getColumns());
-        } else {
-            $implodedColumns = $columns;
+        if (null === $statement) {
+            throw new PDOException('PDOStatement must not be null');
         }
-        return 'SELECT ' . $implodedColumns . ' FROM ' . $connection->getTable();
+
+        foreach ($params as $k => $v) {
+            if (is_bool($v)) {
+                $statement->bindValue($k, $v, PDO::PARAM_BOOL);
+            } else if (is_numeric($v)) {
+                $statement->bindValue($k, $v, PDO::PARAM_INT);
+            } else {
+                $statement->bindValue($k, $v, PDO::PARAM_STR);
+            }
+        }
+
+        return $statement;
     }
 }

@@ -16,43 +16,43 @@ interface ConfigInterface
      *
      * @return string
      */
-    public function getRMDBSName(): string;
+    public function getRMDBSName();
 
     /**
      * @return string
      */
-    public function getHost(): string;
+    public function getHost();
 
     /**
      * @return int
      */
-    public function getPort(): int;
+    public function getPort();
 
     /**
      * Database name.
      *
      * @return string
      */
-    public function getDatabaseName(): string;
+    public function getDatabaseName();
 
     /**
      * Character set.
      *
      * @return string
      */
-    public function getDefaultCharset(): string;
+    public function getDefaultCharset();
 
     /**
      * User name.
      *
      * @return string
      */
-    public function getUserName(): string;
+    public function getUserName();
 
     /**
      * Database password.
      *
      * @return string
      */
-    public function getPassword(): string;
+    public function getPassword();
 }

@@ -11,21 +11,31 @@ namespace Spw;
 
 interface ConnectionInterface
 {
-    public function from(string $table);
+    public function from($table);
+
+    public function into($table);
 
     /**
-     * @param array $columns
+     * @param array|string $columns
      * @return mixed
-     * @throws \PDOException
      */
     public function select($columns = '*');
 
+    public function where($wheres = []);
+
     /**
-     * @param array $columns
-     * @return mixed
-     * @throws \PDOException
+     * @param $column
+     * @param string $asc
+     * @return string
      */
-    public function selectOne($columns = ['*']);
+    public function orderBy($column, $asc = 'desc');
+
+    public function limit($limit);
+    /**
+     * @param array|string $columns
+     * @return mixed
+     */
+    public function selectOne($columns = '*');
 
     /**
      * @param array $values
@@ -47,8 +57,34 @@ interface ConnectionInterface
      */
     public function prepareBinds(array $bindings);
 
+    /**
+     * @return string
+     */
     public function getTable();
 
+    /**
+     * @return array|string
+     */
     public function getColumns();
+
+    /**
+     * @return array
+     */
+    public function getOrderBy();
+
+    /**
+     * @return int
+     */
+    public function getLimit();
+
+    /**
+     * @return array
+     */
+    public function getWheres();
+
+    /**
+     * @return array
+     */
+    public function getValues();
 
 }

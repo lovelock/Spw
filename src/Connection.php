@@ -9,6 +9,7 @@
 namespace Spw;
 
 
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 use Spw\Config\ConfigInterface;
@@ -20,18 +21,26 @@ class Connection implements ConnectionInterface
      *
      * @var ConfigInterface
      */
-    protected $config;
+    private $config;
 
     /**
      * The active PDO connection.
      *
      * @var PDO
      */
-    protected $pdo;
+    private $pdo;
 
-    protected $table;
+    private $table;
 
-    protected $columns;
+    private $columns;
+
+    private $limit;
+
+    private $wheres;
+
+    private $orderBy = [];
+
+    private $values = [];
 
 
     /**
@@ -44,7 +53,7 @@ class Connection implements ConnectionInterface
      * The default PDO connection options
      * @var array
      */
-    protected $options = [
+    private $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
         PDO::ATTR_TIMEOUT => self::TIME_OUT,
@@ -73,6 +82,7 @@ class Connection implements ConnectionInterface
 
     /**
      * @return PDO
+     * @throws \PDOException
      * @internal param $config
      */
     private function connect()
@@ -119,19 +129,48 @@ class Connection implements ConnectionInterface
     {
         $this->columns = $columns;
 
-        $sql = StatementBuilder::buildSelectStatement($this);
+        $builtSql = SqlBuilder::buildSelectSql($this);
 
-        return $this->connect()->prepare($sql)->fetchAll();
+        if (is_array($builtSql)) { // Parameters need to be bound, \PDOStatement::execute() must be called.
+            $preparedSth = $this->connect()->prepare($builtSql[0]);
+            $boundSth = StatementBuilder::bindParams($preparedSth, $builtSql[1]);
+            $boundSth->execute();
+        } else { // Simple \PDO::query() method is called.
+            $boundSth = $this->connect()->query($builtSql);
+        }
+
+        return $boundSth->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
-     * @param array $columns
+     * @param array $wheres
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function where($wheres = [])
+    {
+        if (!is_array($wheres)) {
+            throw new InvalidArgumentException('Where condition must be an array, string ' . $wheres . ' is given.');
+        }
+        $this->wheres = $wheres;
+        return $this;
+    }
+
+    public function limit($limit)
+    {
+        $this->limit = $limit;
+
+        return $this;
+    }
+
+    /**
+     * @param array|string $columns
      * @return mixed
      * @throws \PDOException
      */
-    public function selectOne($columns = ['*'])
+    public function selectOne($columns = '*')
     {
-        // TODO: Implement selectOne() method.
+        return $this->limit(1)->select($columns);
     }
 
     /**
@@ -141,7 +180,10 @@ class Connection implements ConnectionInterface
      */
     public function insert(array $values)
     {
-        // TODO: Implement insert() method.
+        $this->values = $values;
+
+
+
     }
 
     /**
@@ -161,5 +203,72 @@ class Connection implements ConnectionInterface
     public function prepareBinds(array $bindings)
     {
         // TODO: Implement prepareBinds() method.
+    }
+
+    public function orderBy($column, $asc = 'desc')
+    {
+        $this->orderBy[] = [$column, $asc];
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrderBy()
+    {
+        return $this->orderBy;
+    }
+
+    /**
+     * @return array
+     */
+    public function getWheres()
+    {
+        return $this->wheres;
+    }
+
+
+    /**
+     * @param $sql
+     * @param $data
+     * @return bool
+     * @throws \PDOException
+     */
+    public function query($sql, $data)
+    {
+        $sth = $this->connect()->prepare($sql);
+
+        foreach ($data as $k => $v) {
+            $sth->bindParam($k, $v);
+        }
+
+        return $sth->execute();
+    }
+
+    /**
+     * @return array
+     */
+    public function getValues()
+    {
+        return $this->values;
+    }
+
+    /**
+     * @param $table
+     * @return $this
+     */
+    public function into($table)
+    {
+        $this->table = $table;
+
+        return $this;
     }
 }
