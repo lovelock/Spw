@@ -6,8 +6,10 @@
  * Time: 5:38 PM
  */
 
-namespace Spw;
+namespace Spw\Builder;
 
+
+use Spw\Connection\ConnectionInterface;
 
 interface SqlBuilderInterface
 {

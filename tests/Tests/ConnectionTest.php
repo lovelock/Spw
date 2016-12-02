@@ -11,7 +11,7 @@ namespace Tests;
 
 use PHPUnit_Framework_TestCase;
 use Spw\Config\DevConfig;
-use Spw\Connection;
+use Spw\Connection\Connection;
 
 
 class ConnectionTest extends PHPUnit_Framework_TestCase

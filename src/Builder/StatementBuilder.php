@@ -6,7 +6,7 @@
  * Time: 4:42 PM
  */
 
-namespace Spw;
+namespace Spw\Builder;
 
 
 use PDO;
@@ -20,7 +20,7 @@ class StatementBuilder
      * @return \PDOStatement
      * @throws PDOException
      */
-    public static function bindParams(\PDOStatement $statement, array $params)
+    public static function bindValues(\PDOStatement $statement, array $params)
     {
         if (null === $statement) {
             throw new PDOException('PDOStatement must not be null');

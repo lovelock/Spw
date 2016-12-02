@@ -6,7 +6,7 @@
  * Time: 3:33 PM
  */
 
-namespace Spw\Utils;
+namespace Spw\Support;
 
 
 class Arrays

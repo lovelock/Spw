@@ -6,12 +6,13 @@
  * Time: 11:54 PM
  */
 
-namespace Spw;
+namespace Spw\Builder;
 
 
 use \InvalidArgumentException;
+use Spw\Connection\ConnectionInterface;
+use Spw\Support\Arrays;
 use Spw\Support\Str;
-use Spw\Utils\Arrays;
 
 class SqlBuilder implements SqlBuilderInterface
 {
@@ -59,37 +60,64 @@ class SqlBuilder implements SqlBuilderInterface
 
         //todo 检查是否是嵌套数组，如果是，说明就是批量写入，如果不是嵌套，就是写入一条
         if (Arrays::isNested($values)) {
-            $cols = Str::quoteWith(array_keys($values), '`');
+            $cols = Str::quoteWith(array_keys($values[0]), '`');
             $sql .= ' (' . implode(', ', $cols) . ') VALUES ';
 
             foreach ($values as $i => $value) {
+                $sql .= '(';
                 foreach ($value as $k => $item) {
-                    $sql .= '(' . $k . '_' . $i . '), ';
-                    $inputParams[$k . '_' . $i] = $item;
+                    $sql .= ':' . $k . '_' . $i . ', ';
+                    $inputParams[':' . $k . '_' . $i] = $item;
                 }
+                $sql = rtrim($sql, ', ');
+                $sql .= '),';
             }
-
         } else {
             $sql .= ' SET ';
             foreach ($values as $key => $val) {
-                $sql .= Str::quoteWith($key, '`') . ' = ' . $key . ', ';
-                $inputParams[$key] = $val;
+                $markedKey = self::valueMarker($key);
+                $sql .= Str::quoteWith($key, '`') . ' = ' . $markedKey . ', ';
+                $inputParams[$markedKey] = $val;
             }
         }
         $sql = rtrim($sql, ', ') . ' ';
 
-        $preparedSth = $this->connect()->
-
-
+        return [
+            $sql,
+            $inputParams,
+        ];
     }
 
     /**
      * @param ConnectionInterface $connection
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public static function buildUpdateSql(ConnectionInterface $connection)
     {
-        // TODO: Implement buildUpdateSql() method.
+        $sql = 'UPDATE ' . $connection->getTable() . ' SET ';
+
+        $values = $connection->getValues();
+        $inputParams = [];
+
+        foreach ($values as $key => $val) {
+            $markedKey = self::valueMarker($key);
+            $sql .= Str::quoteWith($key, '`') . ' = ' . $markedKey . ', ';
+            $inputParams[$markedKey] = $val;
+        }
+
+        $sql = rtrim($sql, ', ');
+
+        $parsedWhere = self::parseWhere($connection);
+
+        $sql .= $parsedWhere['where'];
+
+        $inputParams = array_merge($inputParams, $parsedWhere['inputParameters']);
+
+        return [
+            $sql,
+            $inputParams,
+        ];
     }
 
     /**
@@ -98,7 +126,16 @@ class SqlBuilder implements SqlBuilderInterface
      */
     public static function buildDeleteSql(ConnectionInterface $connection)
     {
-        // TODO: Implement buildDeleteSql() method.
+        $sql = 'DELETE FROM ' . $connection->getTable();
+
+        $parsedWhere = self::parseWhere($connection);
+        $sql .= $parsedWhere['where'];
+        $inputParams = $parsedWhere['inputParameters'];
+
+        return [
+            $sql,
+            $inputParams,
+        ];
     }
 
     private static function parseLimit(ConnectionInterface $connection)
@@ -137,7 +174,6 @@ class SqlBuilder implements SqlBuilderInterface
             throw new InvalidArgumentException('Database table must be a string ' . $table . ' is given.');
         }
 
-        //todo 处理一下带点的情况 比如db.table
         return ' FROM ' . $table;
     }
 

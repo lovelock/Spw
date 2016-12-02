@@ -9,7 +9,7 @@
 namespace Tests;
 
 use Spw\Config\DevConfig;
-use Spw\Connection;
+use Spw\Connection\Connection;
 
 class ConnectionInsertTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,9 +20,29 @@ class ConnectionInsertTest extends \PHPUnit_Framework_TestCase
             ->insert([
                 'name' => 'wangqingchun',
                 'address' => 'Beijing',
-                'email' => 'frostwong@gmail.com',
+                'email' => 'frostwong@gmail.com' . random_int(1, 10000),
             ]);
 
-        var_export($id);
+        $this->assertTrue($id);
+    }
+
+    public function testMultiInsert()
+    {
+        $conn = new Connection(new DevConfig());
+        $id = $conn->into('staffs')
+            ->insert([
+                [
+                    'name' => 'xxxx',
+                    'address' => 'kdkdkdkd',
+                    'email' => 'dskfjaskdfj@mail.com' . random_int(1, 10000),
+                ],
+                [
+                    'name' => 'xxxx',
+                    'address' => 'kdkdkdkd',
+                    'email' => 'dskfjaskdfj@mail.com' . random_int(1, 10000),
+                ],
+            ]);
+
+        $this->assertTrue($id);
     }
 }

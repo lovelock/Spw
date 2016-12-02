@@ -6,13 +6,15 @@
  * Time: 4:47 PM
  */
 
-namespace Spw;
+namespace Spw\Connection;
 
 
 use InvalidArgumentException;
 use PDO;
-use PDOException;
+use Spw\Builder\SqlBuilder;
+use Spw\Builder\StatementBuilder;
 use Spw\Config\ConfigInterface;
+use Spw\Support\Str;
 
 class Connection implements ConnectionInterface
 {
@@ -22,13 +24,6 @@ class Connection implements ConnectionInterface
      * @var ConfigInterface
      */
     private $config;
-
-    /**
-     * The active PDO connection.
-     *
-     * @var PDO
-     */
-    private $pdo;
 
     private $table;
 
@@ -64,9 +59,6 @@ class Connection implements ConnectionInterface
         $this->config = $config;
     }
 
-    /**
-     * @return mixed
-     */
     public function getColumns()
     {
         return $this->columns;
@@ -74,10 +66,11 @@ class Connection implements ConnectionInterface
 
     /**
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function getTable()
     {
-        return $this->table;
+        return Str::quoteWith($this->table, '`');
     }
 
     /**
@@ -94,26 +87,19 @@ class Connection implements ConnectionInterface
             $this->config->getDefaultCharset()
         );
 
-        try {
-            $pdo = new \PDO(
-                $dsn,
-                $this->config->getUserName(),
-                $this->config->getPassword(),
-                $this->options
-            );
+        $pdo = new \PDO(
+            $dsn,
+            $this->config->getUserName(),
+            $this->config->getPassword(),
+            $this->options
+        );
 
-            $pdo->exec('SET NAMES ' . $this->config->getDefaultCharset());
-        } catch (PDOException $e) {
-            trigger_error(
-                'Errors on connecting mysql(' . $dsn . ' username=' . $this->config->getUserName() . ')',
-                E_USER_WARNING
-            );
-            throw $e;
-        }
+        $pdo->exec('SET NAMES ' . $this->config->getDefaultCharset());
+
         return $pdo;
     }
 
-    public function from(string $table)
+    public function from($table)
     {
         $this->table = $table;
 
@@ -133,7 +119,7 @@ class Connection implements ConnectionInterface
 
         if (is_array($builtSql)) { // Parameters need to be bound, \PDOStatement::execute() must be called.
             $preparedSth = $this->connect()->prepare($builtSql[0]);
-            $boundSth = StatementBuilder::bindParams($preparedSth, $builtSql[1]);
+            $boundSth = StatementBuilder::bindValues($preparedSth, $builtSql[1]);
             $boundSth->execute();
         } else { // Simple \PDO::query() method is called.
             $boundSth = $this->connect()->query($builtSql);
@@ -176,24 +162,45 @@ class Connection implements ConnectionInterface
     /**
      * @param array $values
      * @return mixed
+     * @throws \InvalidArgumentException
      * @throws \PDOException
      */
     public function insert(array $values)
     {
         $this->values = $values;
 
-
-
+        list($sql, $inputParams) = SqlBuilder::buildInsertSql($this);
+        $preparedSth = $this->connect()->prepare($sql);
+        $boundSth = StatementBuilder::bindValues($preparedSth, $inputParams);
+        return $boundSth->execute();
     }
 
     /**
      * @param array $values
      * @return mixed
+     * @throws \InvalidArgumentException
      * @throws \PDOException
      */
     public function update(array $values)
     {
-        // TODO: Implement update() method.
+        $this->values = $values;
+
+        list($sql, $inputParams) = SqlBuilder::buildUpdateSql($this);
+        $preparedSth = $this->connect()->prepare($sql);
+        $boundSth = StatementBuilder::bindValues($preparedSth, $inputParams);
+        return $boundSth->execute();
+    }
+
+    /**
+     * @return bool
+     * @throws \PDOException
+     */
+    public function delete()
+    {
+        list($sql, $inputParams) = SqlBuilder::buildDeleteSql($this);
+        $preparedSth = $this->connect()->prepare($sql);
+        $boundSth = StatementBuilder::bindValues($preparedSth, $inputParams);
+        return $boundSth->execute();
     }
 
     /**
@@ -238,19 +245,12 @@ class Connection implements ConnectionInterface
 
     /**
      * @param $sql
-     * @param $data
-     * @return bool
+     * @return \PDOStatement
      * @throws \PDOException
      */
-    public function query($sql, $data)
+    public function query($sql)
     {
-        $sth = $this->connect()->prepare($sql);
-
-        foreach ($data as $k => $v) {
-            $sth->bindParam($k, $v);
-        }
-
-        return $sth->execute();
+        return $this->connect()->prepare($sql);
     }
 
     /**
