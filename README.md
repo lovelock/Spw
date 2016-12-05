@@ -121,7 +121,7 @@ PR are welcome to improve this project.
 
 ## Donation
 
-1. Alipay
-    ![](http://ww4.sinaimg.cn/small/006y8mN6jw1fafuehixcmj30u019jtci.jpg)
-2. WeChat
-    ![](http://ww4.sinaimg.cn/small/006y8mN6jw1fafudylh28j30u00t9417.jpg)
+1. WeChat
+    ![](http://ww3.sinaimg.cn/large/006y8mN6jw1fafuqzir1ej30g20mr76a.jpg)
+2. Alipay
+    ![](http://ww1.sinaimg.cn/large/006y8mN6jw1fafurfgkg0j30gn0ml76m.jpg)
