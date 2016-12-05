@@ -24,30 +24,30 @@ There are two kinds of methods, one is for querying conditions, the other is for
 1. `from($table)`
     Set table name of the query
    
-1. `into($table)`
+1. `into($table)`  
     Alias of `from($table)`
     
-1. `where(array $conditions)`
+1. `where(array $conditions)`  
     Set where clause of query.
     
-1. `orderBy($col, $asc = 'desc')`
+1. `orderBy($col, $asc = 'desc')`  
     Set sequence of result, this can be called multiple times for multiple orders.
     
-1. `limit($limit)`
+1. `limit($limit)`  
     Set limit number of result.
     
 ### Executing queries methods
 
-1. `select($col)`
+1. `select($col)`  
     Execute select query with specified columns.
     
-1. `update($values)`
+1. `update($values)`  
     Execute update query with specified columns and values.
     
-1. `insert($values)`
+1. `insert($values)`  
     Execute insert query with specified columns and values.
     
-1. `delete()`
+1. `delete()`  
     Execute delete query with specified conditions.
     
 
@@ -121,7 +121,7 @@ PR are welcome to improve this project.
 
 ## Donation
 
-1. WeChat
+1. WeChat  
     ![](http://ww3.sinaimg.cn/small/006y8mN6jw1fafuqzir1ej30g20mr76a.jpg)
-2. Alipay
+2. Alipay  
     ![](http://ww1.sinaimg.cn/small/006y8mN6jw1fafurfgkg0j30gn0ml76m.jpg)
