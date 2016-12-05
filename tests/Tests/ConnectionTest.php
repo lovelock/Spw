@@ -19,7 +19,8 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     public function testSelectOrderBy()
     {
         $conn = new Connection(new DevConfig());
-        $actual = $conn->from('books')
+        $actual = $conn->withCache()
+        ->from('books')
             ->orderBy('name')
             ->select();
 
