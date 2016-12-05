@@ -156,7 +156,7 @@ class Connection implements ConnectionInterface
      */
     public function selectOne($columns = '*')
     {
-        return $this->limit(1)->select($columns);
+        return $this->limit(1)->select($columns)[0];
     }
 
     /**
