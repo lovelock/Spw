@@ -13,7 +13,7 @@
 
 `composer require lovelock/spw`
 
-Then change `vender/lovelock/Spw/src/Config/Database.php` to adapt your own database configuration.
+The you implement ConfigInterface to provide your Database configuration. Config files like ini/yaml/xml or any other formats are OK only if you implement the interface.
 
 ## Api
 
@@ -122,6 +122,6 @@ PR are welcome to improve this project.
 ## Donation
 
 1. Alipay
-    ![](http://ww4.sinaimg.cn/large/006y8mN6jw1fafuehixcmj30u019jtci.jpg)
+    ![](http://ww4.sinaimg.cn/small/006y8mN6jw1fafuehixcmj30u019jtci.jpg)
 2. WeChat
-    ![](http://ww4.sinaimg.cn/large/006y8mN6jw1fafudylh28j30u00t9417.jpg)
+    ![](http://ww4.sinaimg.cn/small/006y8mN6jw1fafudylh28j30u00t9417.jpg)
