@@ -19,8 +19,8 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     public function testSelectOrderBy()
     {
         $conn = new Connection(new DevConfig());
-        $actual = $conn->withCache()
-        ->from('books')
+        $actual = $conn
+            ->from('books')
             ->orderBy('name')
             ->select();
 
@@ -84,12 +84,9 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $actual = $conn->from('books')
             ->selectOne();
         $expected = [
-            0 =>
-                [
-                    'id' => 1,
-                    'name' => 'Code Complete',
-                    'tags' => '["development", "software engineering"]',
-                ],
+            'id' => 1,
+            'name' => 'Code Complete',
+            'tags' => '["development", "software engineering"]',
         ];
 
         $this->assertEquals($expected, $actual);
