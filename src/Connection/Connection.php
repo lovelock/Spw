@@ -37,6 +37,8 @@ class Connection implements ConnectionInterface
 
     private $values = [];
 
+    private $counts = [];
+
 
     /**
      * The default PDO connection timeout
@@ -282,5 +284,18 @@ class Connection implements ConnectionInterface
      */
     public function count($col, $alias, $distinct = false)
     {
+        $this->counts[] = [$col, $alias, $distinct];
+
+        return $this;
+    }
+
+    /**
+     * Get count clause of a select SQL statement.
+     *
+     * @return array
+     */
+    public function getCounts()
+    {
+        return $this->counts;
     }
 }

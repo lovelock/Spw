@@ -16,6 +16,23 @@ use Spw\Connection\Connection;
 
 class ConnectionTest extends PHPUnit_Framework_TestCase
 {
+    public function testSelectCount()
+    {
+        $conn = new Connection(new DevConfig());
+        $actual = $conn->from('books')
+            ->count('name', 'num_name')
+            ->select('');
+
+        $expected = [
+            0 =>
+                [
+                    'num_name' => 3,
+                ],
+        ];
+
+        $this->assertEquals($expected, $actual);
+    }
+
     public function testSelectOrderBy()
     {
         $conn = new Connection(new DevConfig());

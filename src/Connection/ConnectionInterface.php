@@ -132,10 +132,17 @@ interface ConnectionInterface
     public function getWheres();
 
     /**
-     * Get column names and values of a inserting of updating SQL statement.
+     * Get column names and values of a inserting or updating SQL statement.
      *
      * @return array
      */
     public function getValues();
+
+    /**
+     * Get count clause of a select SQL statement.
+     *
+     * @return array
+     */
+    public function getCounts();
 
 }

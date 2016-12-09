@@ -23,6 +23,7 @@ class SqlBuilder implements SqlBuilderInterface
     public static function buildSelectSql(ConnectionInterface $connection)
     {
         $sql = self::parseSelectColumns($connection);
+        $sql .= self::parseCount($connection);
         $sql .= self::parseFrom($connection);
         $parsedWhere = self::parseWhere($connection);
         if (is_array($parsedWhere)) {
@@ -150,6 +151,9 @@ class SqlBuilder implements SqlBuilderInterface
     private static function parseSelectColumns(ConnectionInterface $connection)
     {
         $columns = $connection->getColumns();
+        if (!$columns) {
+            return 'SELECT ';
+        }
 
         if ($columns === '*') {
             $implodedColumns = $columns;
@@ -161,6 +165,7 @@ class SqlBuilder implements SqlBuilderInterface
                 $implodedColumns = Str::quoteWith($columns, '`');
             }
         }
+
         return 'SELECT ' . $implodedColumns;
     }
 
@@ -336,6 +341,31 @@ class SqlBuilder implements SqlBuilderInterface
             'symbol' => strtoupper($symbol),
             'value' => $value,
         ];
+    }
+
+    private static function parseCount(ConnectionInterface $connection)
+    {
+        $counts = $connection->getCounts();
+        if (!$counts) {
+           return '';
+        }
+        $sql = '';
+        foreach ($counts as $count) {
+            $tmp = ' COUNT(' . Str::quoteWith($count[0], '`') . ')';
+            if ($count[2]) {
+                $tmp = 'DISTINCT(' . $tmp . ')';
+            }
+            if ($count[1]) {
+                $tmp .= ' AS ' . Str::quoteWith($count[1], '`');
+            }
+            $sql .= $tmp . ',';
+        }
+
+        if ($connection->getColumns()) {
+            return ', ' . rtrim($sql, ',');
+        } else {
+            return rtrim($sql, ',');
+        }
     }
 
 
