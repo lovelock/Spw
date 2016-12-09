@@ -271,4 +271,16 @@ class Connection implements ConnectionInterface
 
         return $this;
     }
+
+    /**
+     * Count specified column.
+     *
+     * @param string $col
+     * @param string $alias
+     * @param bool $distinct
+     * @return mixed
+     */
+    public function count($col, $alias, $distinct = false)
+    {
+    }
 }

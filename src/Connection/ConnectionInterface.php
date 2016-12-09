@@ -36,6 +36,16 @@ interface ConnectionInterface
     public function select($columns = '*');
 
     /**
+     * Count specified column.
+     *
+     * @param string $col
+     * @param string $alias
+     * @param bool $distinct
+     * @return mixed
+     */
+    public function count($col, $alias, $distinct = false);
+
+    /**
      * Construct where clause of a SQL statement.
      *
      * @param array $wheres
