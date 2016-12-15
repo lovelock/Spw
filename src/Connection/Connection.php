@@ -14,6 +14,7 @@ use PDO;
 use Spw\Builder\SqlBuilder;
 use Spw\Builder\StatementBuilder;
 use Spw\Config\ConfigInterface;
+use Spw\PdoFactory;
 use Spw\Support\Str;
 
 class Connection implements ConnectionInterface
@@ -82,23 +83,7 @@ class Connection implements ConnectionInterface
      */
     private function connect()
     {
-        $dsn = sprintf('%s:dbname=%s;host=%s;port=%d;charset=%s', $this->config->getRMDBSName(),
-            $this->config->getDatabaseName(),
-            $this->config->getHost(),
-            $this->config->getPort(),
-            $this->config->getDefaultCharset()
-        );
-
-        $pdo = new \PDO(
-            $dsn,
-            $this->config->getUserName(),
-            $this->config->getPassword(),
-            $this->options
-        );
-
-        $pdo->exec('SET NAMES ' . $this->config->getDefaultCharset());
-
-        return $pdo;
+        return PdoFactory::makePdo($this->config, $this->options);
     }
 
     public function from($table)
@@ -174,7 +159,8 @@ class Connection implements ConnectionInterface
         list($sql, $inputParams) = SqlBuilder::buildInsertSql($this);
         $preparedSth = $this->connect()->prepare($sql);
         $boundSth = StatementBuilder::bindValues($preparedSth, $inputParams);
-        return $boundSth->execute();
+        $boundSth->execute();
+        return $this->connect()->lastInsertId();
     }
 
     /**
@@ -190,7 +176,8 @@ class Connection implements ConnectionInterface
         list($sql, $inputParams) = SqlBuilder::buildUpdateSql($this);
         $preparedSth = $this->connect()->prepare($sql);
         $boundSth = StatementBuilder::bindValues($preparedSth, $inputParams);
-        return $boundSth->execute();
+        $boundSth->execute();
+        return $boundSth->rowCount();
     }
 
     /**
@@ -202,7 +189,8 @@ class Connection implements ConnectionInterface
         list($sql, $inputParams) = SqlBuilder::buildDeleteSql($this);
         $preparedSth = $this->connect()->prepare($sql);
         $boundSth = StatementBuilder::bindValues($preparedSth, $inputParams);
-        return $boundSth->execute();
+        $boundSth->execute();
+        return $boundSth->rowCount();
     }
 
     /**

@@ -23,7 +23,7 @@ class ConnectionInsertTest extends \PHPUnit_Framework_TestCase
                 'email' => 'frostwong@gmail.com' . random_int(1, 10000),
             ]);
 
-        $this->assertTrue($id);
+        $this->assertGreaterThan(1, $id);
     }
 
     public function testMultiInsert()
@@ -43,6 +43,6 @@ class ConnectionInsertTest extends \PHPUnit_Framework_TestCase
                 ],
             ]);
 
-        $this->assertTrue($id);
+        $this->assertGreaterThan(1, $id);
     }
 }
