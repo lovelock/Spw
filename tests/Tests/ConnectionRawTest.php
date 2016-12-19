@@ -18,7 +18,29 @@ class ConnectionRawTest extends \PHPUnit_Framework_TestCase
     {
         $conn = new Connection(new DevConfig());
         $sql = 'select * from books';
-        var_export($conn->raw($sql));
+        $actual = $conn->raw($sql);
+        $expected = [
+            0 =>
+                [
+                    'id' => 1,
+                    'name' => 'Code Complete',
+                    'tags' => '["development", "software engineering"]',
+                ],
+            1 =>
+                [
+                    'id' => 2,
+                    'name' => 'Core Java',
+                    'tags' => '["java", "development"]',
+                ],
+            2 =>
+                [
+                    'id' => 3,
+                    'name' => 'Thinking in Python',
+                    'tags' => '["python", "development"]',
+                ],
+        ];
+
+        $this->assertEquals($expected, $actual);
     }
 
     public function testInsert()
@@ -26,20 +48,21 @@ class ConnectionRawTest extends \PHPUnit_Framework_TestCase
         $conn = new Connection(new DevConfig());
         $email = 'sdkfsdfj@kkggk.com'. random_int(1, 10000);
         $sql = 'insert into staffs (`name`, `email`, `address`) values(\'xxkdkdsjsadkf\', \'' . $email . '\', \'badasdfs\')';
-        var_export($conn->raw($sql));
+        $this->assertGreaterThan(1, $conn->raw($sql));
     }
 
     public function testUpdate()
     {
         $conn = new Connection(new DevConfig());
         $sql = 'update staffs set `name` = "dkfasdfjaksjdfas" WHERE `id` = 44';
-        var_export($conn->raw($sql));
+        $this->assertGreaterThanOrEqual(0, $conn->raw($sql));
     }
 
     public function testDelete()
     {
         $conn = new Connection(new DevConfig());
         $sql = 'delete from staffs where `id` = 41';
-        var_export($conn->raw($sql));
+
+        $this->assertGreaterThanOrEqual(0, $conn->raw($sql));
     }
 }
