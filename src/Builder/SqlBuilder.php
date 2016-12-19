@@ -334,7 +334,7 @@ class SqlBuilder implements SqlBuilderInterface
         }
 
         if (strpos($symbol, 'JSON') === 0) {
-            $value = Str::quoteWith($value, '"');
+            $value[0] = Str::quoteWith($value[0], '"');
         }
 
         return [

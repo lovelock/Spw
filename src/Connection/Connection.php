@@ -57,6 +57,10 @@ class Connection implements ConnectionInterface
         PDO::ATTR_TIMEOUT => self::TIME_OUT,
     ];
 
+    const EXEC_RETURN_ROW_SET = 1;
+    const EXEC_RETURN_ROW_COUNT = 2;
+    const EXEC_RETURN_LAST_INSERT_ID = 3;
+
     public function __construct(ConfigInterface $config)
     {
         $this->config = $config;
@@ -193,15 +197,6 @@ class Connection implements ConnectionInterface
         return $boundSth->rowCount();
     }
 
-    /**
-     * @param array $bindings
-     * @return mixed
-     */
-    public function prepareBinds(array $bindings)
-    {
-        // TODO: Implement prepareBinds() method.
-    }
-
     public function orderBy($column, $asc = 'desc')
     {
         $this->orderBy[] = [$column, $asc];
@@ -285,5 +280,26 @@ class Connection implements ConnectionInterface
     public function getCounts()
     {
         return $this->counts;
+    }
+
+
+    /**
+     * Run raw sql and return result.
+     *
+     * @param $sql
+     * @return array|int
+     * @throws \PDOException
+     */
+    public function raw($sql)
+    {
+        if (stripos($sql, 'select') === 0) {
+            $stmt = $this->connect()->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else if (stripos($sql, 'update') === 0 || stripos($sql, 'delete') === 0) {
+            return $this->connect()->exec($sql);
+        } else if (stripos($sql, 'insert') === 0) {
+            $this->connect()->query($sql);
+            return $this->connect()->lastInsertId();
+        }
     }
 }

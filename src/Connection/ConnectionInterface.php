@@ -145,4 +145,12 @@ interface ConnectionInterface
      */
     public function getCounts();
 
+    /**
+     * Run raw sql and return result.
+     *
+     * @param $sql
+     * @return array
+     */
+    public function raw($sql);
+
 }
