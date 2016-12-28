@@ -149,8 +149,9 @@ interface ConnectionInterface
      * Run raw sql and return result.
      *
      * @param $sql
+     * @param array $params
      * @return array
      */
-    public function raw($sql);
+    public function raw($sql, array $params);
 
 }

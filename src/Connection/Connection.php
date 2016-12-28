@@ -287,18 +287,20 @@ class Connection implements ConnectionInterface
      * Run raw sql and return result.
      *
      * @param $sql
+     * @param array $params
      * @return array|int
      * @throws \PDOException
      */
-    public function raw($sql)
+    public function raw($sql, array $params)
     {
+        $stmt = $this->connect()->prepare($sql);
+        $stmt->execute($params);
+
         if (stripos($sql, 'select') === 0) {
-            $stmt = $this->connect()->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else if (stripos($sql, 'update') === 0 || stripos($sql, 'delete') === 0) {
-            return $this->connect()->exec($sql);
+            return $stmt->execute();
         } else if (stripos($sql, 'insert') === 0) {
-            $this->connect()->query($sql);
             return $this->connect()->lastInsertId();
         }
     }

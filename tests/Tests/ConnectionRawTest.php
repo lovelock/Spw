@@ -17,22 +17,10 @@ class ConnectionRawTest extends \PHPUnit_Framework_TestCase
     public function testSelect()
     {
         $conn = new Connection(new DevConfig());
-        $sql = 'select * from books';
-        $actual = $conn->raw($sql);
+        $sql = 'select * from books where id = ?';
+        $actual = $conn->raw($sql, [3]);
         $expected = [
             0 =>
-                [
-                    'id' => 1,
-                    'name' => 'Code Complete',
-                    'tags' => '["development", "software engineering"]',
-                ],
-            1 =>
-                [
-                    'id' => 2,
-                    'name' => 'Core Java',
-                    'tags' => '["java", "development"]',
-                ],
-            2 =>
                 [
                     'id' => 3,
                     'name' => 'Thinking in Python',
@@ -47,22 +35,22 @@ class ConnectionRawTest extends \PHPUnit_Framework_TestCase
     {
         $conn = new Connection(new DevConfig());
         $email = 'sdkfsdfj@kkggk.com'. random_int(1, 10000);
-        $sql = 'insert into staffs (`name`, `email`, `address`) values(\'xxkdkdsjsadkf\', \'' . $email . '\', \'badasdfs\')';
-        $this->assertGreaterThan(1, $conn->raw($sql));
+        $sql = 'insert into staffs (`name`, `email`, `address`) values(?, ?, ?)';
+        $this->assertGreaterThan(1, $conn->raw($sql, ['xxkdkdsjsadkf', $email . 'badasdfs', 'fkasdjfkasjkdlfj']));
     }
 
     public function testUpdate()
     {
         $conn = new Connection(new DevConfig());
-        $sql = 'update staffs set `name` = "dkfasdfjaksjdfas" WHERE `id` = 44';
-        $this->assertGreaterThanOrEqual(0, $conn->raw($sql));
+        $sql = 'update staffs set `name` = "dkfasdfjaksjdfas" WHERE `id` = ?';
+        $this->assertGreaterThanOrEqual(0, $conn->raw($sql, [44]));
     }
 
     public function testDelete()
     {
         $conn = new Connection(new DevConfig());
-        $sql = 'delete from staffs where `id` = 41';
+        $sql = 'delete from staffs where `id` = ?';
 
-        $this->assertGreaterThanOrEqual(0, $conn->raw($sql));
+        $this->assertGreaterThanOrEqual(0, $conn->raw($sql, [41]));
     }
 }
