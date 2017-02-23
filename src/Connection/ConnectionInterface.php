@@ -88,6 +88,14 @@ interface ConnectionInterface
     public function insert(array $values);
 
     /**
+     * Execute replace action.
+     *
+     * @param array $values
+     * @return mixed
+     */
+    public function replace(array $values);
+
+    /**
      * Execute update action.
      *
      * @param array $values

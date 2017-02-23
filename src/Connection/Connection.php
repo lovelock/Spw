@@ -173,6 +173,22 @@ class Connection implements ConnectionInterface
      * @throws \InvalidArgumentException
      * @throws \PDOException
      */
+    public function replace(array $values)
+    {
+        $this->values = $values;
+
+        list($sql, $inputParams) = SqlBuilder::buildReplaceSql($this);
+        $preparedSth = $this->connect()->prepare($sql);
+        $boundSth = StatementBuilder::bindValues($preparedSth, $inputParams);
+        $boundSth->execute();
+        return $this->connect()->lastInsertId();
+    }
+    /**
+     * @param array $values
+     * @return mixed
+     * @throws \InvalidArgumentException
+     * @throws \PDOException
+     */
     public function update(array $values)
     {
         $this->values = $values;
@@ -183,6 +199,7 @@ class Connection implements ConnectionInterface
         $boundSth->execute();
         return $boundSth->rowCount();
     }
+
 
     /**
      * @return bool

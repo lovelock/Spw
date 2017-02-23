@@ -94,6 +94,49 @@ class SqlBuilder implements SqlBuilderInterface
      * @return mixed
      * @throws \InvalidArgumentException
      */
+    public static function buildReplaceSql(ConnectionInterface $connection)
+    {
+        $sql = 'REPLACE INTO ' . $connection->getTable();
+
+        $values = $connection->getValues();
+        $inputParams = [];
+
+        //todo 检查是否是嵌套数组，如果是，说明就是批量写入，如果不是嵌套，就是写入一条
+        if (Arrays::isNested($values)) {
+            $cols = Str::quoteWith(array_keys($values[0]), '`');
+            $sql .= ' (' . implode(', ', $cols) . ') VALUES ';
+
+            foreach ($values as $i => $value) {
+                $sql .= '(';
+                foreach ($value as $k => $item) {
+                    $sql .= ':' . $k . '_' . $i . ', ';
+                    $inputParams[':' . $k . '_' . $i] = $item;
+                }
+                $sql = rtrim($sql, ', ');
+                $sql .= '),';
+            }
+        } else {
+            $sql .= ' SET ';
+            foreach ($values as $key => $val) {
+                $markedKey = self::valueMarker($key);
+                $sql .= Str::quoteWith($key, '`') . ' = ' . $markedKey . ', ';
+                $inputParams[$markedKey] = $val;
+            }
+        }
+        $sql = rtrim($sql, ', ') . ' ';
+
+        return [
+            $sql,
+            $inputParams,
+        ];
+    }
+
+
+    /**
+     * @param ConnectionInterface $connection
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
     public static function buildUpdateSql(ConnectionInterface $connection)
     {
         $sql = 'UPDATE ' . $connection->getTable() . ' SET ';
