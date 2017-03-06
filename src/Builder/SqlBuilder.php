@@ -184,11 +184,19 @@ class SqlBuilder implements SqlBuilderInterface
 
     private static function parseLimit(ConnectionInterface $connection)
     {
-        if (!($limit = (int)$connection->getLimit())) {
+        $limits = $connection->getLimit();
+        if (empty($limits)) {
             return '';
         }
 
-        return ' LIMIT ' . $limit;
+        $offset = (int)$limits['offset'];
+        $count = (int)$limits['count'];
+
+        if ($count === 0) {
+            return ' LIMIT ' . $offset;
+        } else {
+            return ' LIMIT ' . $offset . ', ' . $count;
+        }
     }
 
     private static function parseSelectColumns(ConnectionInterface $connection)

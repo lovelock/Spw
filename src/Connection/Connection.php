@@ -30,7 +30,9 @@ class Connection implements ConnectionInterface
 
     private $columns;
 
-    private $limit;
+    private $limitOffset;
+
+    private $limitCount;
 
     private $wheres;
 
@@ -133,9 +135,10 @@ class Connection implements ConnectionInterface
         return $this;
     }
 
-    public function limit($limit)
+    public function limit($offset, $count = 0)
     {
-        $this->limit = $limit;
+        $this->limitOffset = $offset;
+        $this->limitCount = $count;
 
         return $this;
     }
@@ -225,7 +228,14 @@ class Connection implements ConnectionInterface
      */
     public function getLimit()
     {
-        return $this->limit;
+        $limit = [];
+        if (null !== $this->limitOffset) {
+            $limit['offset'] = $this->limitOffset;
+        }
+        if (null !== $this->limitCount) {
+            $limit['count'] = $this->limitCount;
+        }
+        return $limit;
     }
 
     /**

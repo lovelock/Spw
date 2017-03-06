@@ -65,10 +65,11 @@ interface ConnectionInterface
     /**
      * Set limit of a SQL statement.
      *
-     * @param $limit
+     * @param $offset
+     * @param $count
      * @return ConnectionInterface
      */
-    public function limit($limit);
+    public function limit($offset, $count = 0);
 
     /**
      * Select single row of data set.

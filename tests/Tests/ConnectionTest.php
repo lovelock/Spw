@@ -445,4 +445,39 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $actual);
     }
+
+    public function testLimitWithCount()
+    {
+        $conn = new Connection(new DevConfig());
+
+        $expected = [
+            0 =>
+                [
+                    'id' => 1,
+                    'name' => 'wangqingchun',
+                    'dogs' => '["holly", "foo", "bar"]',
+                ],
+            1 =>
+                [
+                    'id' => 2,
+                    'name' => 'wangqingchun',
+                    'dogs' => '{"foo": "bar", "microsoft": "bing"}',
+                ],
+        ];
+        $actual = $conn->from('pairs')
+            ->limit(0, 2)
+            ->select();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSelectWithLimitOffset0Count0()
+    {
+        $conn = new Connection(new DevConfig());
+        $expected = [];
+        $actual = $conn->from('pairs')
+            ->limit(0, 0)
+            ->select();
+
+        $this->assertEquals($expected, $actual);
+    }
 }
