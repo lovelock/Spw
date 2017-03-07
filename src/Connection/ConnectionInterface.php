@@ -155,6 +155,14 @@ interface ConnectionInterface
     public function getCounts();
 
     /**
+     * Get number of rows of specific condition.
+     *
+     * @return integer
+     */
+    public function getNumRows();
+
+
+    /**
      * Run raw sql and return result.
      *
      * @param $sql

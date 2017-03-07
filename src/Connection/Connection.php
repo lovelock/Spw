@@ -331,4 +331,27 @@ class Connection implements ConnectionInterface
             return $this->connect()->lastInsertId();
         }
     }
+
+
+    /**
+     * Get number of rows of specific condition.
+     *
+     * @return integer
+     * @throws \PDOException
+     */
+    public function getNumRows()
+    {
+        $builtSql = SqlBuilder::buildRowCountSql($this);
+
+        if (is_array($builtSql)) {
+            $preparedSth = $this->connect()->prepare($builtSql[0]);
+            $boundSth = StatementBuilder::bindValues($preparedSth, $builtSql[1]);
+            $boundSth->execute();
+        } else {
+            $boundSth = $this->connect()->query($builtSql);
+        }
+
+        $result = $boundSth->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['total_count'];
+    }
 }

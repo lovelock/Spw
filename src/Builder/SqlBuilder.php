@@ -47,6 +47,31 @@ class SqlBuilder implements SqlBuilderInterface
         return $sql;
     }
 
+    public static function buildRowCountSql(ConnectionInterface $connection)
+    {
+        $sql = self::parseSelectColumns($connection);
+        $sql .= 'COUNT(1) AS `total_count`';
+        $sql .= self::parseFrom($connection);
+        $parsedWhere = self::parseWhere($connection);
+
+        if (is_array($parsedWhere)) {
+            $where = $parsedWhere['where'];
+            $parameters = $parsedWhere['inputParameters'];
+            $sql .= $where;
+
+
+            $sql .= self::parseOrderBy($connection);
+            $sql .= self::parseLimit($connection);
+
+            return [
+                $sql,
+                $parameters,
+            ];
+        }
+
+        return $sql;
+    }
+
     /**
      * @param ConnectionInterface $connection
      * @return mixed
@@ -418,6 +443,5 @@ class SqlBuilder implements SqlBuilderInterface
             return rtrim($sql, ',');
         }
     }
-
 
 }

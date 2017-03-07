@@ -9,6 +9,7 @@
 namespace Tests;
 
 
+use MongoDB\Driver\Exception\ConnectionException;
 use PHPUnit_Framework_TestCase;
 use Spw\Config\DevConfig;
 use Spw\Connection\Connection;
@@ -479,5 +480,17 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
             ->select();
 
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testRowCount()
+    {
+        $conn = new Connection(new DevConfig());
+        $actual = $conn->from('pairs')
+            ->where([
+                'id' => ['>', 2]
+            ])
+            ->getNumRows();
+
+        $this->assertEquals(2, $actual);
     }
 }
