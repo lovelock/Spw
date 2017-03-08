@@ -1,74 +1,18 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Frost Wong <frostwong@gmail.com>
- * Date: 11/29/16
- * Time: 11:02 PM
+ * User: Administrator
+ * Date: 2017/3/9
+ * Time: 0:12
  */
 
 namespace Spw\Config;
 
 
-class DevConfig implements ConfigInterface
+class DevConfig extends AbstractConfig
 {
-    /**
-     * Get RMDBS name: mysql for default.
-     *
-     * @return string
-     */
-    public function getRMDBSName()
+    public function __construct($dbName)
     {
-        return 'mysql';
-    }
-
-    /**
-     * Database name.
-     *
-     * @return string
-     */
-    public function getDatabaseName()
-    {
-        return 'spw';
-    }
-
-    /**
-     * Character set.
-     *
-     * @return string
-     */
-    public function getDefaultCharset()
-    {
-        return 'utf8mb4';
-    }
-
-    /**
-     * User name.
-     *
-     * @return string
-     */
-    public function getUserName()
-    {
-        return 'spw';
-    }
-
-    /**
-     * Database password.
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return 'spw';
-    }
-
-    public function getHost()
-    {
-//        return '127.0.0.1';
-        return '192.168.159.3';
-    }
-
-    public function getPort()
-    {
-        return 3306;
+        $this->config = parse_ini_file('database.ini', true)[$dbName];
     }
 }

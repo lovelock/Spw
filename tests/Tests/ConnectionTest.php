@@ -19,7 +19,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 {
     public function testSelectCount()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->count('name', 'num_name')
             ->select('');
@@ -36,7 +36,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testSelectOrderBy()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn
             ->from('books')
             ->orderBy('name')
@@ -68,7 +68,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testSelect()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->select();
 
@@ -98,7 +98,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testSelectOne()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->selectOne();
         $expected = [
@@ -112,7 +112,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testSelectMultiOrderBy()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->orderBy('name', 'asc')
             ->orderBy('id')
@@ -138,7 +138,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testSelectOrderByLimitString()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->orderBy('name')
             ->limit('2')
@@ -160,7 +160,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testSelectOrderByLimit()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->orderBy('name')
             ->limit(2)
@@ -182,7 +182,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereEquals()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->where([
                 'name' => 'Code Complete',
@@ -203,7 +203,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testMultiWhere()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->where([
                 'id' => 1,
@@ -225,7 +225,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereIn()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->where([
                 'id' => ['IN', [1, 2]],
@@ -252,7 +252,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereGreaterThan()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->where([
                 'id' => ['>', 1],
@@ -279,7 +279,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereJsonContains()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->where([
                 'tags' => ['JSON_CONTAINS', 'python'],
@@ -300,7 +300,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereJsonValueEquals()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('books')
             ->where([
                 'tags.1' => 'development'
@@ -327,7 +327,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereJsonNamedEquals1()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('pairs')
             ->where([
                 'dogs.foo' => 'bar',
@@ -360,7 +360,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereJsonNamedEquals2()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('pairs')
             ->where([
                 'dogs.microsoft' => 'bing',
@@ -393,7 +393,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereJsonNamedEqualsMixed()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('pairs')
             ->where([
                 'dogs.foo' => 'bar',
@@ -428,7 +428,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testWhereJsonNamedGreaterThan()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('pairs')
             ->where([
                 'dogs.bar' => ['<', 9],
@@ -449,7 +449,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testLimitWithCount()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
 
         $expected = [
             0 =>
@@ -473,7 +473,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testSelectWithLimitOffset0Count0()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $expected = [];
         $actual = $conn->from('pairs')
             ->limit(0, 0)
@@ -484,7 +484,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testRowCount()
     {
-        $conn = new Connection(new DevConfig());
+        $conn = new Connection(new DevConfig('spw'));
         $actual = $conn->from('pairs')
             ->where([
                 'id' => ['>', 2]
