@@ -280,6 +280,7 @@ class SqlBuilder implements SqlBuilderInterface
         '<' => 'lt',
         '<>' => 'neq',
         '!=' => 'neq',
+        'BETWEEN' => 'between',
         'LIKE' => 'LIKE',
         'IN' => 'IN',
         'NOT IN' => 'NOT_IN',
@@ -316,6 +317,18 @@ class SqlBuilder implements SqlBuilderInterface
                             $whereItems[] = Str::quoteWith($col,
                                     '`') . ' ' . $expression['symbol'] . ' (' . implode(', ',
                                     $markerList) . ')';
+                            break;
+                        case 'BETWEEN':
+                            if (!is_array($expression['value'])) {
+                                throw new InvalidArgumentException('Value of BETWEEN expression should be an array');
+                            }
+                            $markerList = [];
+                            foreach ($expression['value'] as $key => $value) {
+                                $betweenMarker = $marker . '_' . $key;
+                                $inputParameters[$betweenMarker] = $value;
+                                $markerList[] = $betweenMarker;
+                            }
+                            $whereItems[] = Str::quoteWith($col, '`') . ' ' . $expression['symbol'] . ' ' . $markerList[0] . ' AND ' . $markerList[1];
                             break;
 
                         case 'JSON_CONTAINS':

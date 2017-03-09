@@ -9,7 +9,6 @@
 namespace Tests;
 
 
-use MongoDB\Driver\Exception\ConnectionException;
 use PHPUnit_Framework_TestCase;
 use Spw\Config\DevConfig;
 use Spw\Connection\Connection;
@@ -492,5 +491,37 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
             ->getNumRows();
 
         $this->assertEquals(2, $actual);
+    }
+
+    public function testBetween()
+    {
+        $conn = new Connection(new DevConfig('spw'));
+        $expected = [
+            0 =>
+                [
+                    'id' => 1,
+                    'name' => 'wangqingchun',
+                    'dogs' => '["holly", "foo", "bar"]',
+                ],
+            1 =>
+                [
+                    'id' => 2,
+                    'name' => 'wangqingchun',
+                    'dogs' => '{"foo": "bar", "microsoft": "bing"}',
+                ],
+        ];
+        $actual = $conn->from('pairs')
+            ->where([
+                'id' => [
+                    'BETWEEN',
+                    [
+                        1,
+                        2
+                    ]
+                ]
+            ])
+            ->select();
+
+        $this->assertEquals($expected, $actual);
     }
 }
