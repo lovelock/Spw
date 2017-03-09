@@ -281,7 +281,7 @@ class SqlBuilder implements SqlBuilderInterface
         '<>' => 'neq',
         '!=' => 'neq',
         'LIKE' => 'LIKE',
-        'IN' => 'LIKE',
+        'IN' => 'IN',
         'NOT IN' => 'NOT_IN',
         'JSON_CONTAINS' => 'JSON_CONTAINS',
         'JSON_SEARCH' => 'JSON_SEARCH',

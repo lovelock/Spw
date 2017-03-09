@@ -11,7 +11,7 @@ namespace Tests;
 use Spw\Config\DevConfig;
 use Spw\Connection\Connection;
 
-class ConnectionInsertTest extends \PHPUnit_Framework_TestCase
+class ConnectionReplaceTest extends \PHPUnit_Framework_TestCase
 {
     public function testInsertCommonValues()
     {

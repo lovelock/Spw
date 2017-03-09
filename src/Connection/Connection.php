@@ -106,6 +106,8 @@ class Connection implements ConnectionInterface
      */
     public function select($columns = '*')
     {
+        $this->resetProperties();
+
         $this->columns = $columns;
 
         $builtSql = SqlBuilder::buildSelectSql($this);
@@ -161,6 +163,8 @@ class Connection implements ConnectionInterface
      */
     public function insert(array $values)
     {
+        $this->resetProperties();
+
         $this->values = $values;
 
         list($sql, $inputParams) = SqlBuilder::buildInsertSql($this);
@@ -178,6 +182,8 @@ class Connection implements ConnectionInterface
      */
     public function replace(array $values)
     {
+        $this->resetProperties();
+
         $this->values = $values;
 
         list($sql, $inputParams) = SqlBuilder::buildReplaceSql($this);
@@ -186,6 +192,7 @@ class Connection implements ConnectionInterface
         $boundSth->execute();
         return $this->connect()->lastInsertId();
     }
+
     /**
      * @param array $values
      * @return mixed
@@ -194,6 +201,8 @@ class Connection implements ConnectionInterface
      */
     public function update(array $values)
     {
+        $this->resetProperties();
+
         $this->values = $values;
 
         list($sql, $inputParams) = SqlBuilder::buildUpdateSql($this);
@@ -325,10 +334,14 @@ class Connection implements ConnectionInterface
 
         if (stripos($sql, 'select') === 0) {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } else if (stripos($sql, 'update') === 0 || stripos($sql, 'delete') === 0) {
-            return $stmt->execute();
-        } else if (stripos($sql, 'insert') === 0) {
-            return $this->connect()->lastInsertId();
+        } else {
+            if (stripos($sql, 'update') === 0 || stripos($sql, 'delete') === 0) {
+                return $stmt->execute();
+            } else {
+                if (stripos($sql, 'insert') === 0) {
+                    return $this->connect()->lastInsertId();
+                }
+            }
         }
     }
 
@@ -341,6 +354,7 @@ class Connection implements ConnectionInterface
      */
     public function getNumRows()
     {
+        $this->resetProperties();
         $builtSql = SqlBuilder::buildRowCountSql($this);
 
         if (is_array($builtSql)) {
@@ -353,5 +367,14 @@ class Connection implements ConnectionInterface
 
         $result = $boundSth->fetch(PDO::FETCH_ASSOC);
         return (int)$result['total_count'];
+    }
+
+    private function resetProperties()
+    {
+        $this->columns = '';
+        $this->limitOffset = 0;
+        $this->limitCount = 0;
+        $this->wheres = [];
+        $this->orderBy = [];
     }
 }
