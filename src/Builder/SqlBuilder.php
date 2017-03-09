@@ -49,8 +49,7 @@ class SqlBuilder implements SqlBuilderInterface
 
     public static function buildRowCountSql(ConnectionInterface $connection)
     {
-        $sql = self::parseSelectColumns($connection);
-        $sql .= 'COUNT(1) AS `total_count`';
+        $sql = 'SELECT COUNT(1) AS `total_count`';
         $sql .= self::parseFrom($connection);
         $parsedWhere = self::parseWhere($connection);
 
@@ -58,10 +57,6 @@ class SqlBuilder implements SqlBuilderInterface
             $where = $parsedWhere['where'];
             $parameters = $parsedWhere['inputParameters'];
             $sql .= $where;
-
-
-            $sql .= self::parseOrderBy($connection);
-            $sql .= self::parseLimit($connection);
 
             return [
                 $sql,

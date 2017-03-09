@@ -161,8 +161,6 @@ class Connection implements ConnectionInterface
      */
     public function insert(array $values)
     {
-        $this->resetProperties();
-
         $this->values = $values;
 
         list($sql, $inputParams) = SqlBuilder::buildInsertSql($this);
@@ -180,8 +178,6 @@ class Connection implements ConnectionInterface
      */
     public function replace(array $values)
     {
-        $this->resetProperties();
-
         $this->values = $values;
 
         list($sql, $inputParams) = SqlBuilder::buildReplaceSql($this);
@@ -199,8 +195,6 @@ class Connection implements ConnectionInterface
      */
     public function update(array $values)
     {
-        $this->resetProperties();
-
         $this->values = $values;
 
         list($sql, $inputParams) = SqlBuilder::buildUpdateSql($this);
@@ -352,7 +346,6 @@ class Connection implements ConnectionInterface
      */
     public function getNumRows()
     {
-        $this->resetProperties();
         $builtSql = SqlBuilder::buildRowCountSql($this);
 
         if (is_array($builtSql)) {
@@ -365,14 +358,5 @@ class Connection implements ConnectionInterface
 
         $result = $boundSth->fetch(PDO::FETCH_ASSOC);
         return (int)$result['total_count'];
-    }
-
-    private function resetProperties()
-    {
-        $this->columns = '';
-        $this->limitOffset = null;
-        $this->limitCount = null;
-        $this->wheres = [];
-        $this->orderBy = [];
     }
 }
