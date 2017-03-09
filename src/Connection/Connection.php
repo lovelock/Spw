@@ -372,8 +372,8 @@ class Connection implements ConnectionInterface
     private function resetProperties()
     {
         $this->columns = '';
-        $this->limitOffset = 0;
-        $this->limitCount = 0;
+        $this->limitOffset = null;
+        $this->limitCount = null;
         $this->wheres = [];
         $this->orderBy = [];
     }
