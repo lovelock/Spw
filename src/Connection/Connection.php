@@ -106,8 +106,6 @@ class Connection implements ConnectionInterface
      */
     public function select($columns = '*')
     {
-        $this->resetProperties();
-
         $this->columns = $columns;
 
         $builtSql = SqlBuilder::buildSelectSql($this);
