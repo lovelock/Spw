@@ -94,6 +94,7 @@ class Connection implements ConnectionInterface
 
     public function from($table)
     {
+        $this->resetProperties();
         $this->table = $table;
 
         return $this;
@@ -280,6 +281,7 @@ class Connection implements ConnectionInterface
      */
     public function into($table)
     {
+        $this->resetProperties();
         $this->table = $table;
 
         return $this;
@@ -358,5 +360,19 @@ class Connection implements ConnectionInterface
 
         $result = $boundSth->fetch(PDO::FETCH_ASSOC);
         return (int)$result['total_count'];
+    }
+
+    private function resetProperties()
+    {
+        unset(
+            $this->table,
+            $this->counts,
+            $this->columns,
+            $this->limitCount,
+            $this->limitOffset,
+            $this->wheres,
+            $this->values,
+            $this->orderBy
+        );
     }
 }
