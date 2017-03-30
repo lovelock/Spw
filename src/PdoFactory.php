@@ -13,15 +13,15 @@ use Spw\Config\ConfigInterface;
 
 class PdoFactory
 {
-    private static $pdo;
+    private static $pdoBag = [];
     
     public static function makePdo(ConfigInterface $config, array $options)
     {
-        if (self::$pdo === null) {
-            self::$pdo = self::newPdo($config, $options);
+        if (self::$pdoBag[$config->getDatabaseName()] === null) {
+            self::$pdoBag[$config->getDatabaseName()] = self::newPdo($config, $options);
         }
 
-        return self::$pdo;
+        return self::$pdoBag[$config->getDatabaseName()];
     }
     
     private static function newPdo(ConfigInterface $config, array $options = [])
