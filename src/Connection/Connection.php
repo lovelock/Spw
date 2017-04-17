@@ -94,7 +94,7 @@ class Connection implements ConnectionInterface
 
     public function from($table)
     {
-        $this->resetProperties();
+        $this->reset();
         $this->table = $table;
 
         return $this;
@@ -281,8 +281,7 @@ class Connection implements ConnectionInterface
      */
     public function into($table)
     {
-        $this->resetProperties();
-        $this->table = $table;
+        $this->from($table);
 
         return $this;
     }
@@ -362,17 +361,14 @@ class Connection implements ConnectionInterface
         return (int)$result['total_count'];
     }
 
-    private function resetProperties()
+    public function reset()
     {
-        unset(
-            $this->table,
-            $this->counts,
-            $this->columns,
-            $this->limitCount,
-            $this->limitOffset,
-            $this->wheres,
-            $this->values,
-            $this->orderBy
-        );
+        $this->columns = '';
+        $this->limitCount = null;
+        $this->limitOffset = null;
+        $this->wheres = [];
+        $this->orderBy = [];
+        $this->values = [];
+        $this->counts = [];
     }
 }

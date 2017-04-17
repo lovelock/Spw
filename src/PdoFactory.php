@@ -17,7 +17,7 @@ class PdoFactory
     
     public static function makePdo(ConfigInterface $config, array $options)
     {
-        if (self::$pdoBag[$config->getDatabaseName()] === null) {
+        if (!isset(self::$pdoBag[$config->getDatabaseName()])) {
             self::$pdoBag[$config->getDatabaseName()] = self::newPdo($config, $options);
         }
 
