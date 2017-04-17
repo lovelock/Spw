@@ -31,7 +31,7 @@ class SqlBuilder implements SqlBuilderInterface
             $parameters = $parsedWhere['inputParameters'];
             $sql .= $where;
 
-
+            $sql .= self::parseGroupBy($connection);
             $sql .= self::parseOrderBy($connection);
             $sql .= self::parseLimit($connection);
 
@@ -41,6 +41,7 @@ class SqlBuilder implements SqlBuilderInterface
             ];
         }
 
+        $sql .= self::parseGroupBy($connection);
         $sql .= self::parseOrderBy($connection);
         $sql .= self::parseLimit($connection);
 
@@ -251,6 +252,15 @@ class SqlBuilder implements SqlBuilderInterface
         }
 
         return ' FROM ' . $table;
+    }
+
+    private static function parseGroupBy(ConnectionInterface $connection)
+    {
+        if ('' === $groupBy = $connection->getGroupBy()) {
+            return '';
+        }
+
+        return ' GROUP BY ' . $groupBy . ' ';
     }
 
     private static function parseOrderBy(ConnectionInterface $connection)

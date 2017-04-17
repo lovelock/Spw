@@ -63,6 +63,14 @@ interface ConnectionInterface
     public function orderBy($column, $asc = 'desc');
 
     /**
+     * Construct group by clause of a SQL statement.
+     *
+     * @param $column
+     * @return ConnectionInterface
+     */
+    public function groupBy($column);
+
+    /**
      * Set limit of a SQL statement.
      *
      * @param $offset
@@ -125,6 +133,13 @@ interface ConnectionInterface
      * @return array
      */
     public function getOrderBy();
+
+    /**
+     * Get group by of a SQL statement.
+     *
+     * @return string
+     */
+    public function getGroupBy();
 
     /**
      * Get limit of a SQL statement.
