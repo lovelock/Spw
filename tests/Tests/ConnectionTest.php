@@ -16,6 +16,17 @@ use Spw\Connection\Connection;
 
 class ConnectionTest extends PHPUnit_Framework_TestCase
 {
+    public function testGroupBy()
+    {
+        $conn = new Connection(new DevConfig('spw'));
+        $actual = $conn->from('pairs')
+            ->groupBy('name')
+            ->orderBy('name')
+            ->select('name');
+
+        var_export($actual);exit;
+    }
+
     public function testSelectCount()
     {
         $conn = new Connection(new DevConfig('spw'));

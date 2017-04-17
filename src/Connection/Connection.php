@@ -42,6 +42,8 @@ class Connection implements ConnectionInterface
 
     private $counts = [];
 
+    private $groupBy;
+
 
     /**
      * The default PDO connection timeout
@@ -225,6 +227,12 @@ class Connection implements ConnectionInterface
         return $this;
     }
 
+    public function groupBy($column)
+    {
+        $this->groupBy = $column;
+        return $this;
+    }
+
     /**
      * @return mixed
      */
@@ -246,6 +254,14 @@ class Connection implements ConnectionInterface
     public function getOrderBy()
     {
         return $this->orderBy;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroupBy()
+    {
+        return $this->groupBy;
     }
 
     /**
