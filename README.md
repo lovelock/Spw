@@ -43,12 +43,12 @@ There are two kinds of methods, one is for querying conditions, the other is for
     Set group by clause.
     
 > `where()` method accepts an array as parameter. The array can be various formats.
-    1. `where(['id' => 20])` means `where id = 20`
-    2. `where(['id' => ['IN', [2, 3, 4]]])` means `where id in (2, 3, 4)`
-    3. `where(['id' => ['NOT IN', [2, 3, 4]]])` means `where id not in (2, 3, 4)`
-    4. `where(['id' => ['IS', 'NULL']])` means `where id is null`
-    5. `where(['id' => ['IS', 'NOT NULL']])` means `where id is not null`
-    6. `where(['id' => ['BETWEEN', [2, 4]]])` means `where id between (2, 4)`
+1. `where(['id' => 20])` means `where id = 20`
+2. `where(['id' => ['IN', [2, 3, 4]]])` means `where id in (2, 3, 4)`
+3. `where(['id' => ['NOT IN', [2, 3, 4]]])` means `where id not in (2, 3, 4)`
+4. `where(['id' => ['IS', 'NULL']])` means `where id is null`
+5. `where(['id' => ['IS', 'NOT NULL']])` means `where id is not null`
+6. `where(['id' => ['BETWEEN', [2, 4]]])` means `where id between (2, 4)`
     
 ### Executing queries methods
 
