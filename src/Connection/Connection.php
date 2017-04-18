@@ -114,10 +114,14 @@ class Connection implements ConnectionInterface
         $builtSql = SqlBuilder::buildSelectSql($this);
 
         if (is_array($builtSql)) { // Parameters need to be bound, \PDOStatement::execute() must be called.
-            $preparedSth = $this->connect()->prepare($builtSql[0]);
-            $boundSth = StatementBuilder::bindValues($preparedSth, $builtSql[1]);
-            $boundSth->execute();
-        } else { // Simple \PDO::query() method is called.
+            if ($builtSql[1] !== null) {
+                $preparedSth = $this->connect()->prepare($builtSql[0]);
+                $boundSth = StatementBuilder::bindValues($preparedSth, $builtSql[1]);
+                $boundSth->execute();
+            } else {
+                $boundSth = $this->connect()->query($builtSql[0]);
+            }
+        } else {
             $boundSth = $this->connect()->query($builtSql);
         }
 
@@ -227,12 +231,6 @@ class Connection implements ConnectionInterface
         return $this;
     }
 
-    public function groupBy($column)
-    {
-        $this->groupBy = $column;
-        return $this;
-    }
-
     /**
      * @return mixed
      */
@@ -254,14 +252,6 @@ class Connection implements ConnectionInterface
     public function getOrderBy()
     {
         return $this->orderBy;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGroupBy()
-    {
-        return $this->groupBy;
     }
 
     /**
@@ -386,5 +376,28 @@ class Connection implements ConnectionInterface
         $this->orderBy = [];
         $this->values = [];
         $this->counts = [];
+        $this->groupBy = '';
+    }
+
+    /**
+     * Construct group by clause of a SQL statement.
+     *
+     * @param $column
+     * @return ConnectionInterface
+     */
+    public function groupBy($column)
+    {
+        $this->groupBy = $column;
+        return $this;
+    }
+
+    /**
+     * Get group by of a SQL statement.
+     *
+     * @return string
+     */
+    public function getGroupBy()
+    {
+        return $this->groupBy;
     }
 }

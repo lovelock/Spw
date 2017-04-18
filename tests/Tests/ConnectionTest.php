@@ -19,12 +19,45 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     public function testGroupBy()
     {
         $conn = new Connection(new DevConfig('spw'));
-        $actual = $conn->from('pairs')
+        $actual = $conn->from('staffs')
             ->groupBy('name')
             ->orderBy('name')
             ->select('name');
 
-        var_export($actual);exit;
+        $expected = array (
+            0 =>
+                array (
+                    'name' => 'yyyyyyyy',
+                ),
+            1 =>
+                array (
+                    'name' => 'xxxx',
+                ),
+            2 =>
+                array (
+                    'name' => 'xxkdkdsjsadkf',
+                ),
+            3 =>
+                array (
+                    'name' => 'wangqingchun',
+                ),
+            4 =>
+                array (
+                    'name' => 'dkfasdfjaksjdfas',
+                )
+        );
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSelectWithNull()
+    {
+        $conn = new Connection(new DevConfig('spw'));
+        $conn->from('staffs')
+            ->where([
+                'name' => ['IS', 'NULL'],
+            ])
+            ->select();
     }
 
     public function testSelectCount()

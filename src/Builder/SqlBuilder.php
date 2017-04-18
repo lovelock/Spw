@@ -9,7 +9,7 @@
 namespace Spw\Builder;
 
 
-use \InvalidArgumentException;
+use InvalidArgumentException;
 use Spw\Connection\ConnectionInterface;
 use Spw\Support\Arrays;
 use Spw\Support\Str;
@@ -260,7 +260,7 @@ class SqlBuilder implements SqlBuilderInterface
             return '';
         }
 
-        return ' GROUP BY ' . $groupBy . ' ';
+        return ' GROUP BY ' . $groupBy;
     }
 
     private static function parseOrderBy(ConnectionInterface $connection)
@@ -289,6 +289,8 @@ class SqlBuilder implements SqlBuilderInterface
         'LIKE' => 'LIKE',
         'IN' => 'IN',
         'NOT IN' => 'NOT_IN',
+        'IS' => 'IS',
+        'IS NOT' => 'IS_NOT',
         'JSON_CONTAINS' => 'JSON_CONTAINS',
         'JSON_SEARCH' => 'JSON_SEARCH',
     ];
@@ -350,7 +352,7 @@ class SqlBuilder implements SqlBuilderInterface
                             list($quantity, $needle) = $expression['value'];
 
                             if (!in_array($quantity, Str::quoteWith(['one', 'all'], '"'), true)) {
-                                throw new InvalidArgumentException('Model: the 1st item of JSON_SEARCH expression\'value must be \'one\' or \'all\'');
+                                throw new InvalidArgumentException('The 1st item of JSON_SEARCH expression\'value must be \'one\' or \'all\'');
                             }
 
                             $whereItems[] = $expression['symbol'] . '(' . Str::quoteWith($col,
@@ -358,6 +360,13 @@ class SqlBuilder implements SqlBuilderInterface
                             $inputParameters[$marker] = $needle;
                             break;
 
+                        case 'IS':
+                            if (!in_array(strtoupper($expression['value']), ['NULL', 'NOT NULL'], true)) {
+                                throw new InvalidArgumentException('With IS expression, value can only be NULL or NOT NULL');
+                            }
+
+                            $whereItems[] = Str::quoteWith($col, '`') . ' ' . $expression['symbol'] . ' ' . strtoupper($expression['value']);
+                            break;
                         default:
                             $whereItems[] = Str::quoteWith($col, '`') . ' ' . $expression['symbol'] . ' ' . $marker;
                             $inputParameters[$marker] = $expression['value'];
@@ -441,7 +450,7 @@ class SqlBuilder implements SqlBuilderInterface
     {
         $counts = $connection->getCounts();
         if (!$counts) {
-           return '';
+            return '';
         }
         $sql = '';
         foreach ($counts as $count) {
