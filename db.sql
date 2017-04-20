@@ -1,7 +1,7 @@
 CREATE DATABASE spw;
 USE spw;
 CREATE USER 'spw'@'%' IDENTIFIED BY 'spw';
-GRANT ALL PRIVILEGES ON spw.* TO `'spw'@'%'`;
+GRANT ALL PRIVILEGES ON spw.* TO 'spw'@'%';
 FLUSH PRIVILEGES ;
 
 CREATE TABLE staffs (

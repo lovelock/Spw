@@ -9,12 +9,13 @@
 namespace Spw;
 
 
+use PDO;
 use Spw\Config\ConfigInterface;
 
 class PdoFactory
 {
     private static $pdoBag = [];
-    
+
     public static function makePdo(ConfigInterface $config, array $options)
     {
         if (!isset(self::$pdoBag[$config->getDatabaseName()])) {
@@ -23,7 +24,12 @@ class PdoFactory
 
         return self::$pdoBag[$config->getDatabaseName()];
     }
-    
+
+    /**
+     * @param ConfigInterface $config
+     * @param array $options
+     * @return PDO
+     */
     private static function newPdo(ConfigInterface $config, array $options = [])
     {
         $dsn = sprintf('%s:dbname=%s;host=%s;port=%d;charset=%s', $config->getRMDBSName(),
@@ -33,7 +39,7 @@ class PdoFactory
             $config->getDefaultCharset()
         );
 
-        $pdo = new \PDO(
+        $pdo = new PDO(
             $dsn,
             $config->getUserName(),
             $config->getPassword(),

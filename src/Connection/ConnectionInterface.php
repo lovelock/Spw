@@ -9,6 +9,8 @@
 namespace Spw\Connection;
 
 
+use Psr\Log\LoggerInterface;
+
 interface ConnectionInterface
 {
     /**
@@ -185,5 +187,12 @@ interface ConnectionInterface
      * @return array
      */
     public function raw($sql, array $params);
+
+    /**
+     * Set logger to log queries.
+     * @param LoggerInterface $logger
+     * @return ConnectionInterface
+     */
+    public function setLogger(LoggerInterface $logger);
 
 }

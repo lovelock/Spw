@@ -11,6 +11,7 @@ namespace Spw\Connection;
 
 use InvalidArgumentException;
 use PDO;
+use Psr\Log\LoggerInterface;
 use Spw\Builder\SqlBuilder;
 use Spw\Builder\StatementBuilder;
 use Spw\Config\ConfigInterface;
@@ -43,6 +44,11 @@ class Connection implements ConnectionInterface
     private $counts = [];
 
     private $groupBy;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
 
     /**
@@ -87,11 +93,15 @@ class Connection implements ConnectionInterface
     /**
      * @return PDO
      * @throws \PDOException
-     * @internal param $config
      */
     private function connect()
     {
-        return PdoFactory::makePdo($this->config, $this->options);
+        try {
+            return PdoFactory::makePdo($this->config, $this->options);
+        } catch (\PDOException $e) {
+            $this->logger->error('PDO construction error', [$e->getCode(), $e->getMessage(), $e->getTraceAsString()]);
+            return null;
+        }
     }
 
     public function from($table)
@@ -113,19 +123,44 @@ class Connection implements ConnectionInterface
 
         $builtSql = SqlBuilder::buildSelectSql($this);
 
-        if (is_array($builtSql)) { // Parameters need to be bound, \PDOStatement::execute() must be called.
-            if ($builtSql[1] !== null) {
-                $preparedSth = $this->connect()->prepare($builtSql[0]);
-                $boundSth = StatementBuilder::bindValues($preparedSth, $builtSql[1]);
-                $boundSth->execute();
-            } else {
-                $boundSth = $this->connect()->query($builtSql[0]);
-            }
+        if (is_array($builtSql)) {
+            $sql = $builtSql[0];
+            $values = $builtSql[1];
         } else {
-            $boundSth = $this->connect()->query($builtSql);
+            $sql = $builtSql;
         }
 
-        return $boundSth->fetchAll(PDO::FETCH_ASSOC);
+        if ($values === null) {
+            $boundSth = $this->connect()->query($sql);
+        } else {
+            try {
+                $preparedSth = $this->connect()->prepare($builtSql[0]);
+            } catch (\PDOException $e) {
+                $this->logger->error('Prepare statement error', [$e->getCode(), $e->getMessage(), $e->getTraceAsString()]);
+                return null;
+            }
+
+            try {
+                $boundSth = StatementBuilder::bindValues($preparedSth, $builtSql[1]);
+            } catch (\PDOException $e) {
+                $this->logger->error('PDOStatement bind values error', [$e->getCode(), $e->getMessage(), $e->getTraceAsString()]);
+                return null;
+            }
+
+            try {
+                $boundSth->execute();
+            } catch (\PDOException $e) {
+                $this->logger->error('PDOStatement execution error', [$e->getCode(), $e->getMessage(), $e->getTraceAsString()]);
+                return null;
+            }
+        }
+
+        try {
+            return $boundSth->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            $this->logger->error('PDOStatement fetchAll error', [$e->getCode(), $e->getMessage(), $e->getTraceAsString()]);
+            return null;
+        }
     }
 
     /**
@@ -333,15 +368,15 @@ class Connection implements ConnectionInterface
 
         if (stripos($sql, 'select') === 0) {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } else {
-            if (stripos($sql, 'update') === 0 || stripos($sql, 'delete') === 0) {
-                return $stmt->execute();
-            } else {
-                if (stripos($sql, 'insert') === 0) {
-                    return $this->connect()->lastInsertId();
-                }
-            }
         }
+
+        if (stripos($sql, 'insert') === 0) {
+            return $this->connect()->lastInsertId();
+        }
+
+//        if (stripos($sql, 'update') === 0 || stripos($sql, 'delete') === 0 || stripos($sql, 'replace') === 0) {
+            return $stmt->execute();
+//        }
     }
 
 
@@ -399,5 +434,17 @@ class Connection implements ConnectionInterface
     public function getGroupBy()
     {
         return $this->groupBy;
+    }
+
+    /**
+     * Set logger to log queries.
+     * @param LoggerInterface $logger
+     * @return ConnectionInterface
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 }
